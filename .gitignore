@@ -18,7 +18,7 @@ build/
 
 #忽略测试模块
 #test*
-module
+#module
 #!test_copy_copy/
 
 

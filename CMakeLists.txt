@@ -6,7 +6,7 @@ project(Myproject)
 
 find_package(OpenCV REQUIRED)
 
-add_executable(main chess.cpp)
+add_executable(main hsvcolor.cpp)
 target_link_libraries(
     main
     PRIVATE ${OpenCV_LIBS}
