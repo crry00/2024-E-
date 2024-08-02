@@ -1,12 +1,8 @@
 import cv2
 import numpy as np
 import math
-def LOG(msg):
-    print(msg)
+from info import *
 
-def SHOW(name, img):
-    #pass
-    cv2.imshow(name, img)
 
 
 class Box:
@@ -34,9 +30,10 @@ class Chess:
         self.angle = 0
         self.chessboard_hsv = [(20, 61, 0), (50, 255, 255)]
         self.box_hsv = [(0, 92, 141), (66, 255, 255)]
-        self.white_hsv = [(44,0,117), (179, 255, 255)]
-        self.black_hsv = [(0, 0, 0), (179, 255, 43)]
+        self.white_hsv = [(71,0,146), (179, 255, 255)]
+        self.black_hsv = [(0, 0, 0), (179, 255, 69)]
         self.hsv = None
+        self.last_board=np.zeros((3,3))
 
     def get_hsv(self, img):
         if img is None:
@@ -52,7 +49,7 @@ class Chess:
  
 
         mask = cv2.inRange(self.hsv, np.array(self.chessboard_hsv[0]), np.array(self.chessboard_hsv[1]))
-        #cv2.dilate(mask, mask, None, iterations=1)
+        #cv2.dilate(mask, mask, None, iterations=2)
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         max_box = None
         max_area = 0
@@ -88,7 +85,28 @@ class Chess:
         return True
 
 
-        
+    def find_change(self,now_board,player):
+        last_num=np.count_nonzero(self.last_board==0)
+        print(last_num)
+        now_num=np.count_nonzero(now_board==0)
+        print(now_num)
+        if  last_num!=now_num:
+            self.last_board=now_board
+            return [None,None]
+        else:
+            if(last_num==9):
+                return [None,None]
+            sub_board=np.subtract(now_board,self.last_board)
+            indices_after= np.where(sub_board == player)
+            if not indices_after[0].size:
+                return [None, None]
+            # 将二维索引转换为一维索引
+            flat_indices_after = np.ravel_multi_index(indices_after, sub_board.shape)
+            indices_before= np.where(sub_board == -player)
+            # 将二维索引转换为一维索引
+            flat_indices_before = np.ravel_multi_index(indices_before, sub_board.shape)
+            return [flat_indices_after, flat_indices_before]
+
 
     def reorder(self):
         self.boxes.clear()

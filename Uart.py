@@ -1,5 +1,4 @@
 import time
-
 import serial
 
 
@@ -13,9 +12,9 @@ class Uart:
     def close(self):
         self.uart.close()
 
-    def car_ready(self, wait=True):
-        print(f"car is ready")
-        self.uart_send_command(task_id=99, param1=0, param2=0, wait=wait, timeout=99999)
+    # def car_ready(self, wait=True):
+    #     print(f"car is ready")
+    #     self.uart_send_command(task_id=99, param1=0, param2=0, wait=wait, timeout=99999)
 
     def uart_send_command(self, task_id, param1, param2, wait=True, timeout=10):
         print(f"@{task_id:02d}!{param1:+04d}|{param2:+04d}#")

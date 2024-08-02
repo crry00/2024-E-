@@ -37,6 +37,7 @@ class Chess:
         self.white_hsv = [(44,0,117), (179, 255, 255)]
         self.black_hsv = [(0, 0, 0), (179, 255, 43)]
         self.hsv = None
+        self.lastboard=np.zeros(3,3)
 
     def get_hsv(self, img):
         if img is None:
@@ -219,6 +220,23 @@ class Chess:
         self.show_box(img)
         return True
 
+    def find_change(self,now_board,player):
+        last_num=np.count_nonzero(self.last_board==0)
+        now_num=np.count_nonzero(now_board==0)
+        if  last_num!=now_num:
+            self.lastboard=now_board
+            return [None,None]
+        else:
+            sub_board=np.subtract(now_board,self.last_board)
+            indices_after= np.where(sub_board == player)
+            # 将二维索引转换为一维索引
+            flat_indices_after = np.ravel_multi_index(indices_after, sub_board.shape)
+            indices_before= np.where(sub_board == -player)
+            # 将二维索引转换为一维索引
+            flat_indices_before = np.ravel_multi_index(indices_before, sub_board.shape)
+            return [flat_indices_after, flat_indices_before]
+
+            
 
     def moving(self, img):
         if img is None:
@@ -266,7 +284,7 @@ class Chess:
 def main():
     cap = cv2.VideoCapture(2)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cap.isOpened():
         return
     chess = Chess()
